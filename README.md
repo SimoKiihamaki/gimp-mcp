@@ -43,17 +43,104 @@ gimp-ai-integration/
 ## Installation
 
 ### Prerequisites
-- GIMP 2.10 or later
+- GIMP 2.10 or GIMP 3.0
 - Python 3.8 or later
 - Required Python packages (see requirements.txt files)
 
-### Setup
+### Easy Setup (Recommended)
+Use our automated setup script which handles dependencies, environment configuration, and plugin installation:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/gimp-ai-integration.git
+cd gimp-ai-integration
+
+# Run the setup script (creates a virtual environment)
+python scripts/setup_gimp_ai.py --venv
+
+# Follow the on-screen instructions to complete setup
+```
+
+### Manual Setup
+If you prefer to set up manually:
+
 1. Clone this repository
-2. Install backend dependencies: `pip install -r backend/requirements.txt`
-3. Install frontend dependencies: `pip install -r frontend/requirements.txt`
-4. Copy or symlink the `frontend/gimp_plugin` directory to your GIMP plugins directory
-5. Start the MCP server: `python backend/server/app.py`
+2. Install dependencies:
+   ```bash
+   pip install -r backend/requirements.txt
+   pip install -r frontend/requirements.txt
+   ```
+3. Deploy the plugin to GIMP:
+   ```bash
+   python scripts/deploy.py
+   ```
+   This will detect your GIMP version (2.10 or 3.0) and install the appropriate plugin version.
+4. Set environment variables:
+   ```bash
+   # On macOS/Linux
+   export MCP_SERVER_URL="http://localhost:8000/jsonrpc"
+   
+   # On Windows
+   set MCP_SERVER_URL=http://localhost:8000/jsonrpc
+   ```
+5. Start the MCP server:
+   ```bash
+   python backend/server/app.py
+   ```
 6. Launch GIMP and access AI features under "Filters > AI Tools"
+
+### macOS Specific Instructions
+On macOS, we provide a dedicated setup script that handles all the details:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/gimp-ai-integration.git
+cd gimp-ai-integration
+
+# Make the setup script executable
+chmod +x scripts/setup_macos.sh
+
+# Run the setup script
+./scripts/setup_macos.sh
+
+# Follow the on-screen instructions
+```
+
+The script will:
+1. Create a Python virtual environment
+2. Install all dependencies
+3. Detect your GIMP version (2.10 or 3.0)
+4. Install the plugin to the correct location
+5. Create a start script for the server
+
+Once setup is complete, you can start the server with:
+```bash
+./start_gimp_ai.sh
+```
+
+For reference, the GIMP plugin directories on macOS are:
+- GIMP 2.10: `~/Library/Application Support/GIMP/2.10/plug-ins/`
+- GIMP 3.0: `~/Library/Application Support/GIMP/3.0/plug-ins/` or inside the application bundle
+
+If you're using GIMP 3.0 and encounter issues with the plugin not showing up:
+1. Check that you're using the GIMP 3.0 compatible plugin (plugin_main_gimp3.py)
+2. Make sure the plugin file is executable: `chmod +x plugin_main_gimp3.py`
+3. Try both plugin directories to ensure it's installed in the correct location
+4. Use the "Hello World" option in the AI Tools menu to test the connection to the server
+
+### Troubleshooting
+
+If the plugin doesn't appear in GIMP's menu:
+- Ensure the plugin is installed in the correct directory for your GIMP version
+- Check that the plugin file is executable
+- Restart GIMP after installing the plugin
+- Look for error messages in GIMP's Error Console (Windows > Dockable Dialogs > Error Console)
+
+If the plugin can't connect to the server:
+- Make sure the MCP server is running
+- Check that the MCP_SERVER_URL environment variable is set correctly
+- Try the "Hello World" option to test the connection
+- Look for error messages in both GIMP and the server terminal
 
 ## Features
 

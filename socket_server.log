@@ -1,0 +1,5 @@
+2025-04-10 13:11:00,259 - server.app - INFO - Authentication is disabled
+2025-04-10 13:11:00,259 - server.app - INFO - PyTorch version: 2.6.0
+2025-04-10 13:11:00,259 - server.app - INFO - CUDA is not available, using CPU for AI operations (this will be slower)
+2025-04-10 13:11:00,896 - GimpMCPSocketServer - ERROR - Failed to start server: [Errno 48] Address already in use
+2025-04-10 13:11:00,896 - GimpMCPSocketServer - ERROR - Server error: [Errno 48] Address already in use

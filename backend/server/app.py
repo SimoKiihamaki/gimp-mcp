@@ -41,6 +41,20 @@ app = FastAPI(
     version="0.1.0",
 )
 
+# Check for required dependencies
+try:
+    # Try importing key dependencies to give helpful error messages
+    import fastapi
+    import uvicorn
+    import requests
+    import pydantic
+    from sse_starlette.sse import EventSourceResponse
+except ImportError as e:
+    logger.error(f"Missing required dependency: {e}")
+    logger.error("Please install all required dependencies with:")
+    logger.error("  pip install -r backend/requirements.txt")
+    sys.exit(1)
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -56,6 +70,20 @@ if enable_auth:
     logger.info("API Key authentication is enabled")
 else:
     logger.info("Authentication is disabled")
+
+# Check if AI models are available
+try:
+    # Optional dependency check for AI features
+    import torch
+    logger.info(f"PyTorch version: {torch.__version__}")
+    if torch.cuda.is_available():
+        logger.info(f"CUDA is available: {torch.cuda.get_device_name(0)}")
+    else:
+        logger.info("CUDA is not available, using CPU for AI operations (this will be slower)")
+except ImportError:
+    logger.warning("PyTorch not found. Some AI features may not work.")
+    logger.warning("To enable all AI features, install PyTorch with:")
+    logger.warning("  pip install torch torchvision")
 
 # Define JSON-RPC request model
 class JsonRpcRequest(BaseModel):

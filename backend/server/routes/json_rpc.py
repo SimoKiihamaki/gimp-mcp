@@ -16,6 +16,7 @@ from ..handlers.feedback import handle_submit_feedback, handle_get_feedback
 from ..handlers.gimp_api import handle_gimp_api
 from ..handlers.image_analysis import handle_image_analysis
 from ..handlers.ai_assistant import handle_ai_assistant
+from ..handlers.mcp_protocol import handle_initialize, handle_shutdown
 from ..mcp_integration import handle_mcp_operation, execute_gimp_commands, handle_mcp_close_session
 
 # Setup logging
@@ -23,6 +24,11 @@ logger = logging.getLogger(__name__)
 
 # Dictionary mapping method names to handler functions
 HANDLERS = {
+    # MCP Protocol methods
+    "initialize": handle_initialize,
+    "shutdown": handle_shutdown,
+    
+    # GIMP AI feature handlers
     "hello_world": handle_hello_world,
     "ai_background_removal": handle_background_removal,
     "ai_inpainting": handle_inpainting,

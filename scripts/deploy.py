@@ -34,18 +34,90 @@ def check_requirements():
     # Return True if the check passed, False otherwise
     return result.returncode == 0
 
+def detect_gimp_version():
+    """Detect the installed GIMP version."""
+    system = platform.system()
+    
+    # Check for GIMP 3.0 first
+    if system == "Windows":
+        # Windows common paths for GIMP 3.0
+        gimp3_paths = [
+            r"C:\\Program Files\\GIMP 3\\bin\\gimp-3.0.exe",
+            r"C:\\Program Files (x86)\\GIMP 3\\bin\\gimp-3.0.exe"
+        ]
+        for path in gimp3_paths:
+            if os.path.exists(path):
+                return "3.0"
+                
+    elif system == "Darwin":  # macOS
+        # macOS common paths for GIMP 3.0
+        gimp3_paths = [
+            "/Applications/GIMP-3.0.app",
+            "/Applications/GIMP.app"  # GIMP 3.0 could be installed as 'GIMP.app'
+        ]
+        for path in gimp3_paths:
+            if os.path.exists(path):
+                return "3.0"
+                
+    else:  # Linux
+        # Try to find GIMP 3.0 in PATH
+        if shutil.which("gimp-3.0"):
+            return "3.0"
+            
+    # If GIMP 3.0 not found, check for GIMP 2.10
+    if system == "Windows":
+        gimp2_paths = [
+            r"C:\\Program Files\\GIMP 2\\bin\\gimp-2.10.exe",
+            r"C:\\Program Files (x86)\\GIMP 2\\bin\\gimp-2.10.exe"
+        ]
+        for path in gimp2_paths:
+            if os.path.exists(path):
+                return "2.10"
+                
+    elif system == "Darwin":  # macOS
+        gimp2_paths = [
+            "/Applications/GIMP-2.10.app"
+        ]
+        for path in gimp2_paths:
+            if os.path.exists(path):
+                return "2.10"
+                
+    else:  # Linux
+        if shutil.which("gimp-2.10") or shutil.which("gimp"):
+            return "2.10"
+    
+    # Default to 2.10 if no version found
+    print("Warning: Could not detect GIMP version. Defaulting to 2.10.")
+    return "2.10"
+
 def install_plugin():
     """Install the plugin to the GIMP plugins directory."""
     system = platform.system()
     home = os.path.expanduser("~")
     
-    # Determine the GIMP plugin directory based on the platform
-    if system == "Windows":
-        plugin_dir = os.path.join(home, "AppData", "Roaming", "GIMP", "2.10", "plug-ins")
-    elif system == "Darwin":  # macOS
-        plugin_dir = os.path.join(home, "Library", "Application Support", "GIMP", "2.10", "plug-ins")
-    else:  # Linux
-        plugin_dir = os.path.join(home, ".config", "GIMP", "2.10", "plug-ins")
+    # Detect GIMP version
+    gimp_version = detect_gimp_version()
+    print(f"Detected GIMP version: {gimp_version}")
+    
+    # Determine the GIMP plugin directory based on the platform and version
+    if gimp_version == "3.0":
+        if system == "Windows":
+            plugin_dir = os.path.join(home, "AppData", "Roaming", "GIMP", "3.0", "plug-ins")
+        elif system == "Darwin":  # macOS
+            plugin_dir = os.path.join(home, "Library", "Application Support", "GIMP", "3.0", "plug-ins")
+            # Also check alternative macOS GIMP 3.0 path
+            alt_plugin_dir = "/Applications/GIMP-3.0.app/Contents/Resources/lib/gimp/3.0/plug-ins"
+            if os.path.exists(os.path.dirname(alt_plugin_dir)):
+                plugin_dir = alt_plugin_dir
+        else:  # Linux
+            plugin_dir = os.path.join(home, ".config", "GIMP", "3.0", "plug-ins")
+    else:  # Default to 2.10
+        if system == "Windows":
+            plugin_dir = os.path.join(home, "AppData", "Roaming", "GIMP", "2.10", "plug-ins")
+        elif system == "Darwin":  # macOS
+            plugin_dir = os.path.join(home, "Library", "Application Support", "GIMP", "2.10", "plug-ins")
+        else:  # Linux
+            plugin_dir = os.path.join(home, ".config", "GIMP", "2.10", "plug-ins")
     
     # Create the plugin directory if it doesn't exist
     os.makedirs(plugin_dir, exist_ok=True)
@@ -65,12 +137,21 @@ def install_plugin():
     # Copy the plugin files
     shutil.copytree(plugin_src, plugin_dest)
     
-    # Make the main plugin file executable on Unix-like systems
+    # Make the appropriate main plugin file executable on Unix-like systems
     if system != "Windows":
-        plugin_main = os.path.join(plugin_dest, "plugin_main.py")
-        os.chmod(plugin_main, 0o755)
+        if gimp_version == "3.0":
+            plugin_main = os.path.join(plugin_dest, "plugin_main_gimp3.py")
+            if os.path.exists(plugin_main):
+                os.chmod(plugin_main, 0o755)
+                # Create a symlink to make it more discoverable
+                plugin_main_link = os.path.join(plugin_dest, "plugin_main.py")
+                if not os.path.exists(plugin_main_link):
+                    os.symlink(plugin_main, plugin_main_link)
+        else:
+            plugin_main = os.path.join(plugin_dest, "plugin_main.py")
+            os.chmod(plugin_main, 0o755)
     
-    print("Plugin installed successfully.")
+    print(f"Plugin installed successfully for GIMP {gimp_version}.")
     return True
 
 def configure_environment(server_host, server_port, api_key=None, use_https=False):
