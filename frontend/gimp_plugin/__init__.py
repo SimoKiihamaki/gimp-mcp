@@ -1,0 +1,1 @@
+# GIMP plugin initialization

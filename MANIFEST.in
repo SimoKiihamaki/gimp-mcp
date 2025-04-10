@@ -1,0 +1,31 @@
+# Include the README file
+include README.md
+include LICENSE
+
+# Include requirements
+include backend/requirements.txt
+include frontend/requirements.txt
+
+# Include scripts
+include scripts/*.py
+include scripts/*.sh
+include scripts/*.bat
+
+# Include documentation
+include docs/*.md
+
+# Include the frontend plugin
+recursive-include frontend/gimp_plugin *
+
+# Include the backend server
+recursive-include backend/server *
+
+# Include tests
+recursive-include backend/tests *
+recursive-include frontend/gimp_plugin/tests *
+
+# Exclude bytecode and caches
+global-exclude *.py[cod]
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .DS_Store

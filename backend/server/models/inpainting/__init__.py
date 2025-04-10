@@ -1,0 +1,3 @@
+"""
+Inpainting model initialization module.
+"""
