@@ -6,6 +6,7 @@ base64-encoded images for sending to the MCP server.
 """
 import base64
 import io
+import os
 from typing import Tuple, Optional
 
 import numpy as np
@@ -133,3 +134,41 @@ def base64_to_new_layer(image, base64_image, layer_name="AI Result"):
     except Exception as e:
         pdb.gimp_message(f"Error creating new layer: {str(e)}")
         return None
+
+def get_layer_as_base64(layer, format="PNG"):
+    """
+    Get the current layer as a base64-encoded string.
+    
+    Args:
+        layer: GIMP layer
+        format: Image format (PNG, JPEG, etc.)
+        
+    Returns:
+        Base64-encoded string
+    """
+    return drawable_to_base64(layer, format)
+
+def load_image_from_file(file_path):
+    """
+    Load an image from file and return it as a base64-encoded string.
+    
+    Args:
+        file_path: Path to the image file
+        
+    Returns:
+        Base64-encoded image string
+    """
+    try:
+        # Check if file exists
+        if not os.path.exists(file_path):
+            raise ValueError(f"File not found: {file_path}")
+        
+        # Open the image using PIL
+        with open(file_path, "rb") as f:
+            image_data = f.read()
+        
+        # Convert to base64
+        return base64.b64encode(image_data).decode("utf-8")
+    except Exception as e:
+        pdb.gimp_message(f"Error loading image from file: {str(e)}")
+        raise

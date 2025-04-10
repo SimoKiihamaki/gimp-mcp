@@ -25,21 +25,33 @@ logger = logging.getLogger(__name__)
 
 # Define available styles with their model URLs and names
 STYLE_MODELS = {
-    "starry_night": {
-        "name": "Starry Night (Van Gogh)",
-        "url": "https://github.com/pytorch/examples/raw/main/fast_neural_style/saved_models/starry_night.pth"
-    },
     "mosaic": {
         "name": "Mosaic",
-        "url": "https://github.com/pytorch/examples/raw/main/fast_neural_style/saved_models/mosaic.pth"
+        "url": "https://github.com/yakhyo/fast-neural-style-transfer/releases/download/v0.1%3Afeat/mosaic.pth"
     },
     "candy": {
         "name": "Candy",
-        "url": "https://github.com/pytorch/examples/raw/main/fast_neural_style/saved_models/candy.pth"
+        "url": "https://github.com/yakhyo/fast-neural-style-transfer/releases/download/v0.1%3Afeat/candy.pth"
+    },
+    "rain_princess": {
+        "name": "Rain Princess",
+        "url": "https://github.com/yakhyo/fast-neural-style-transfer/releases/download/v0.1%3Afeat/rain-princess.pth"
     },
     "udnie": {
         "name": "Udnie",
-        "url": "https://github.com/pytorch/examples/raw/main/fast_neural_style/saved_models/udnie.pth"
+        "url": "https://github.com/yakhyo/fast-neural-style-transfer/releases/download/v0.1%3Afeat/udnie.pth"
+    },
+    "la_muse": {
+        "name": "La Muse",
+        "url": "https://huggingface.co/spaces/akhaliq/fast-neural-style/resolve/main/saved_models/la_muse.pth"
+    },
+    "feathers": {
+        "name": "Feathers",
+        "url": "https://huggingface.co/spaces/akhaliq/fast-neural-style/resolve/main/saved_models/feathers.pth"
+    },
+    "the_scream": {
+        "name": "The Scream",
+        "url": "https://huggingface.co/spaces/akhaliq/fast-neural-style/resolve/main/saved_models/the_scream.pth"
     }
 }
 

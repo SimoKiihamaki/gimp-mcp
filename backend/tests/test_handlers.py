@@ -156,7 +156,7 @@ async def test_style_transfer():
         # Test with basic parameters
         result = await handle_style_transfer({
             "image_data": image_data,
-            "style_name": "starry_night",
+            "style_name": "mosaic",
             "strength": 0.8,
             "use_gpu": False,
             "task_id": "test-task"
@@ -177,7 +177,7 @@ async def test_style_transfer():
         # Test error handling (missing image_data)
         with pytest.raises(ValueError):
             await handle_style_transfer({
-                "style_name": "starry_night"
+                "style_name": "mosaic"
             })
         
         # Test error handling (invalid strength)

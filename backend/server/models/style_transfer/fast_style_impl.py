@@ -20,7 +20,7 @@ from .fast_style import TransformerNetwork, STYLE_MODELS, MODELS_DIR
 logger = logging.getLogger(__name__)
 
 class StyleTransferModel:
-    def __init__(self, style_name: str = "starry_night", use_gpu: bool = True):
+    def __init__(self, style_name: str = "mosaic", use_gpu: bool = True):
         """
         Initialize the Style Transfer model.
         
@@ -232,7 +232,7 @@ def image_to_base64(image: Image.Image, format: str = "PNG") -> str:
 # Main function to process an image for style transfer
 def process_style_transfer(
     image_data: str, 
-    style_name: str = "starry_night",
+    style_name: str = "mosaic",
     strength: float = 1.0,
     use_gpu: bool = True
 ) -> str:

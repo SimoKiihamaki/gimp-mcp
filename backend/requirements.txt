@@ -10,3 +10,10 @@ pytest>=7.3.1
 python-dotenv>=1.0.0
 jsonrpc>=1.2.0
 sse-starlette>=1.6.1
+# Added for diffusion-based style transfer
+diffusers>=0.19.0
+transformers>=4.31.0
+accelerate>=0.21.0
+safetensors>=0.3.2
+torch>=2.0.0
+torchvision>=0.15.0

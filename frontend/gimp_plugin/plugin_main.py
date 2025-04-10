@@ -466,6 +466,9 @@ def style_transfer(image, drawable):
     if not params:
         return  # User canceled
     
+    # Determine if we're using classic or diffusion style transfer
+    style_method = params.get("method", "classic")
+    
     # Start the progress bar
     gimp.progress_init("Applying style transfer...")
     
@@ -484,16 +487,59 @@ def style_transfer(image, drawable):
         # Update progress
         gimp.progress_update(0.1)
         
-        # Display message that we're processing
-        pdb.gimp_message(f"Applying style transfer with {params['style_name']} style, this may take a moment...")
-        
-        # Send the request to the server
+        # Create request parameters based on the method
         request_params = {
             "image_data": image_data,
-            "style_name": params["style_name"],
-            "strength": params["strength"],
+            "method": style_method,
             "use_gpu": params["use_gpu"]
         }
+        
+        # Add method-specific parameters
+        if style_method == "classic":
+            # Display message that we're processing
+            pdb.gimp_message(f"Applying classic style transfer with {params['style_name']} style, this may take a moment...")
+            
+            # Add classic style transfer parameters
+            request_params.update({
+                "style_name": params["style_name"],
+                "strength": params["strength"]
+            })
+        elif style_method == "diffusion":
+            # Get model description for the message
+            model_id = params.get("model_id", "sd1.5")
+            style_type = params.get("style_type", "text")
+            
+            if style_type == "text":
+                # Display message for text-guided style transfer
+                prompt_preview = params.get("style_prompt", "")[:30] + "..." if len(params.get("style_prompt", "")) > 30 else params.get("style_prompt", "")
+                pdb.gimp_message(f"Applying diffusion style transfer with text prompt '{prompt_preview}', this may take a moment...")
+                
+                # Add diffusion text-guided parameters
+                request_params.update({
+                    "model_id": model_id,
+                    "style_type": "text",
+                    "style_prompt": params.get("style_prompt", "Oil painting in the style of Van Gogh"),
+                    "strength": params.get("strength", 0.75),
+                    "guidance_scale": params.get("guidance_scale", 7.5),
+                    "num_inference_steps": params.get("num_inference_steps", 30),
+                    "seed": params.get("seed"),
+                    "use_half_precision": params.get("use_half_precision", True)
+                })
+            elif style_type == "image":
+                # Display message for image-guided style transfer
+                pdb.gimp_message(f"Applying diffusion style transfer with reference image, this may take a moment...")
+                
+                # Add diffusion image-guided parameters
+                request_params.update({
+                    "model_id": model_id,
+                    "style_type": "image",
+                    "style_image_data": params.get("style_image_data"),
+                    "strength": params.get("strength", 0.75),
+                    "guidance_scale": params.get("guidance_scale", 7.5),
+                    "num_inference_steps": params.get("num_inference_steps", 30),
+                    "seed": params.get("seed"),
+                    "use_half_precision": params.get("use_half_precision", True)
+                })
         
         # Create a progress update function
         def update_progress(progress_data):
@@ -518,8 +564,15 @@ def style_transfer(image, drawable):
             
             # Create a new layer for the result if requested
             if params["new_layer"]:
-                # Create a new layer
-                new_layer_name = f"Style: {params['style_name'].replace('_', ' ').title()}"
+                # Create a new layer with appropriate name based on method
+                if style_method == "classic":
+                    new_layer_name = f"Style: {params['style_name'].replace('_', ' ').title()}"
+                elif style_method == "diffusion" and params.get("style_type") == "text":
+                    prompt_short = params.get("style_prompt", "")[:15] + "..." if len(params.get("style_prompt", "")) > 15 else params.get("style_prompt", "")
+                    new_layer_name = f"Diffusion: {prompt_short}"
+                else:
+                    new_layer_name = f"Diffusion Style"
+                
                 new_layer = gimp.Layer(image, new_layer_name, drawable.width, 
                                       drawable.height, drawable.type, 100, NORMAL_MODE)
                 
@@ -556,8 +609,11 @@ def style_transfer(image, drawable):
             # Update the display
             gimp.displays_flush()
             
-            # Display success message
-            pdb.gimp_message("Style transfer completed successfully")
+            # Display success message based on method
+            if style_method == "classic":
+                pdb.gimp_message("Classic style transfer completed successfully")
+            else:
+                pdb.gimp_message("Diffusion style transfer completed successfully")
         else:
             pdb.gimp_message("Style transfer failed. No valid response from server.")
     

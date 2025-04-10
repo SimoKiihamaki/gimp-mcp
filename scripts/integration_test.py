@@ -247,7 +247,7 @@ class IntegrationTest(unittest.TestCase):
         # Send the request
         response = self.send_jsonrpc_request("ai_style_transfer", {
             "image_data": image_data,
-            "style_name": "starry_night",
+            "style_name": "mosaic",
             "strength": 0.8,
             "use_gpu": False
         })

@@ -133,7 +133,7 @@ def test_style_transfer():
         # Test the process_style_transfer function
         result_base64 = process_style_transfer(
             image_data=image_base64,
-            style_name="starry_night",
+            style_name="mosaic",
             strength=0.8,
             use_gpu=False
         )
@@ -145,7 +145,7 @@ def test_style_transfer():
         mock_apply_style.assert_called_once()
         args, kwargs = mock_apply_style.call_args
         assert isinstance(args[0], Image.Image)  # image
-        assert args[1] == "starry_night"  # style_name
+        assert args[1] == "mosaic"  # style_name
         assert kwargs.get('strength') == 0.8
         assert kwargs.get('use_gpu') is False
 
